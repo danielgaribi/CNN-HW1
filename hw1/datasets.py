@@ -30,12 +30,20 @@ class RandomImageDataset(Dataset):
         # RNG state outside this method.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if not hasattr(self, 'samples_img_list'):
+            self.samples_img_list = [None for i in range(self.num_samples)]
+            self.samples_label_list = [None for i in range(self.num_samples)]
+        
+        if (self.samples_img_list[index] is None):
+            self.samples_img_list[index] = torch.randint(0, 256, self.image_dim)
+            self.samples_label_list[index] = torch.randint(0, self.num_classes, (1,)).item()
+        
+        return self.samples_img_list[index], self.samples_label_list[index]
         # ========================
 
     def __len__(self):
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return self.num_samples
         # ========================
 
 
@@ -62,11 +70,13 @@ class SubsetDataset(Dataset):
         # Make sure to raise an IndexError if index is out of bounds.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if (index >= self.subset_len):
+            raise IndexError
+        return self.source_dataset[self.offset + index]
         # ========================
 
     def __len__(self):
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return self.subset_len
         # ========================
 
