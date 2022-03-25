@@ -53,7 +53,16 @@ class KNNClassifier(object):
             # - Set y_pred[i] to the most common class among them
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            # create a list with distance from train data and its label and then sort the list.
+            dists = dist_matrix[:,i].numpy()
+            idx = np.argpartition(dists, self.k)[:self.k]
+            labels = [self.y_train[j].item() for j in idx]
+            
+            # dist_label = [(dist_matrix[j,i] ,self.y_train[j]) for j in range(self.x_train.size(dim=0))]
+            # dist_label = sorted(dist_label, key=lambda x: x[0])
+            # labels = [dist_label[i][1] for i in range(self.k)]
+            # get most frequent item in the first k items
+            y_pred[i] = max(set(labels), key = labels.count)
             # ========================
 
         return y_pred
@@ -82,7 +91,11 @@ class KNNClassifier(object):
 
         dists = torch.tensor([])
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        a_squre = torch.sum(x_test ** 2, dim=1)        
+        b_squre = torch.sum(self.x_train ** 2, dim=1) 
+        ab = self.x_train @ torch.t(x_test)
+        
+        dists = (b_squre.view(b_squre.size(dim=0), 1) - 2 * ab + a_squre.view(1, a_squre.size(dim=0))) ** 0.5
         # ========================
 
         return dists
@@ -103,7 +116,8 @@ def accuracy(y: Tensor, y_pred: Tensor):
 
     accuracy = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    trues = (y==y_pred).sum().item()
+    accuracy = trues / y.size(dim=0)
     # ========================
 
     return accuracy
@@ -133,7 +147,19 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         # different split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        fold_size = round(len(ds_train) / num_folds)
+        acc = []
+        for j in range(num_folds):
+            valid_sampler_lst = range(fold_size * j, fold_size * (j+1))
+            train_sampler_lst = [i for i in range(len(ds_train)) if (i < fold_size * j or i >= fold_size * (j+1))]
+            valid_sampler = torch.utils.data.SubsetRandomSampler(valid_sampler_lst)
+            train_sampler = torch.utils.data.SubsetRandomSampler(train_sampler_lst)
+            dl_valid = torch.utils.data.DataLoader(ds_train, batch_size=fold_size, sampler=valid_sampler)
+            dl_train = torch.utils.data.DataLoader(ds_train, batch_size=fold_size, sampler=train_sampler)
+            x_valid, y_valid = dataloader_utils.flatten(dl_valid)
+            y_pred = model.train(dl_train).predict(x_valid)
+            acc.append(accuracy(y_valid, y_pred))
+        accuracies.append(acc)
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])

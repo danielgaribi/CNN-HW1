@@ -29,7 +29,12 @@ def create_train_validation_loaders(dataset: Dataset, validation_ratio,
     #    from the dataset.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    train_size = round(len(dataset) * (1-validation_ratio))
+    valid_size = round(len(dataset) * validation_ratio)
+    train_sampler = torch.utils.data.SubsetRandomSampler(range(0, train_size))
+    valid_sampler = torch.utils.data.SubsetRandomSampler(range(train_size, len(dataset)))
+    dl_train = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler, num_workers=num_workers)
+    dl_valid = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=valid_sampler, num_workers=num_workers)
     # ========================
 
     return dl_train, dl_valid
