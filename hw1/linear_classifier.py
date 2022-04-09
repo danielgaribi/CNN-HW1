@@ -147,9 +147,13 @@ class LinearClassifier(object):
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        W = self.weights[:-1] if has_bias else self.weights
-        W_no_bias = torch.transpose(W,0,1)
-        w_images = W_no_bias.T.reshape(self.n_classes, img_shape[0], img_shape[1], img_shape[2])
+        #initialize w image tensor
+        w_vis = None
+        #exclude bias if exists
+        if has_bias:
+            w_vis = self.weights[:-1]
+        #reshape to dimension of samples
+        w_images = w_vis.T.reshape(self.n_classes, img_shape[0], img_shape[1], img_shape[2])
         # ========================
 
         return w_images
