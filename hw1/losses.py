@@ -55,12 +55,21 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        N = y.size(dim=0)
+        relu = torch.nn.ReLU()
+        x_w_yi = x_scores.gather(1, y.reshape(-1, 1))
+        M = x_scores - x_w_yi + self.delta
+        L_with_yi = relu(M)
+        L_sum = torch.sum(L_with_yi) - N * self.delta # remove N deltas, one for each y_i in the sum
+        loss = (L_sum / N)
+        
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.grad_ctx["x"] = x
+        self.grad_ctx["y"] = y
+        self.grad_ctx["M"] = M
         # ========================
 
         return loss
@@ -73,7 +82,20 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        x = self.grad_ctx["x"]
+        y = self.grad_ctx["y"]
+        M = self.grad_ctx["M"]
+        N = y.size(dim=0)
+        
+        M_is_grater = M > 0 # 1 if Mij>0 else 0
+        M_is_grater = M_is_grater.float()
+        M_is_grater_y_indexes = M_is_grater.gather(1, y.reshape(-1, 1))
+        M_nof_ones_in_rows = torch.sum(M_is_grater, axis=1)
+        dL_j_is_y = M_nof_ones_in_rows - M_is_grater_y_indexes
+        G = M_is_grater.scatter(1, y.reshape(-1, 1), (-1)*dL_j_is_y)
+        grad = x.T @ G
+        grad = grad * (1/N)
+        
         # ========================
 
         return grad

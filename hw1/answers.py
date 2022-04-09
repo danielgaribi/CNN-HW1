@@ -27,40 +27,20 @@ part2_q1 = r"""
 part3_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 part3_q2 = r"""
 **Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1.
 """
 
 part3_q3 = r"""
 **Your answer:**
+1. The learning rate is good, the loss decends fast on the first epoches and then stay in a stady state.
+if it was too low i expect the loss to decend slowly and to not reach it's mean value be the end of the trainig (need more epoches).
+if iw was too high i expecd the loss to decends fast on the epoches, but then to change it value on every epoch (will not arrive to a stady state).
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+2. The model is Slightly overfitted to the training set becaues the traing and the training accurecy is higher then the test accurecy by 5 precent.
 """
 
 # ==============
