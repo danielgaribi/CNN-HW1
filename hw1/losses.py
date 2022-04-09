@@ -90,7 +90,7 @@ class SVMHingeLoss(ClassifierLoss):
         M_is_grater = M > 0 # 1 if Mij>0 else 0
         M_is_grater = M_is_grater.float()
         M_is_grater_y_indexes = M_is_grater.gather(1, y.reshape(-1, 1))
-        M_nof_ones_in_rows = torch.sum(M_is_grater, axis=1)
+        M_nof_ones_in_rows = torch.sum(M_is_grater, axis=1).reshape(-1,1)
         dL_j_is_y = M_nof_ones_in_rows - M_is_grater_y_indexes
         G = M_is_grater.scatter(1, y.reshape(-1, 1), (-1)*dL_j_is_y)
         grad = x.T @ G

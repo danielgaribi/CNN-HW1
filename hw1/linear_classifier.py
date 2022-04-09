@@ -147,11 +147,8 @@ class LinearClassifier(object):
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        #initialize w image tensor
-        w_vis = None
-        #exclude bias if exists
-        if has_bias:
-            w_vis = self.weights[:-1]
+        #initialize w image tensor and exclude bias if exists
+        w_vis = self.weights[:-1] if has_bias else self.weights
         #reshape to dimension of samples
         w_images = w_vis.T.reshape(self.n_classes, img_shape[0], img_shape[1], img_shape[2])
         # ========================
